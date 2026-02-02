@@ -1,0 +1,19 @@
+{
+  "name": "vsclaude-webapp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Mobile web interface for monitoring Claude Code chats in VS Code via CDP snapshots",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "web-push": "^3.6.7",
+    "ws": "^8.18.0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
