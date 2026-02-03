@@ -17,7 +17,7 @@ import {
   injectMessage, clickBack, clickByText, clickViewAll
 } from './lib/cdp.js';
 import {
-  cascades, lastSendByCascade, sentMessageHistory, initDiscovery,
+  cascades, lastSendByCascade, initDiscovery,
   discover, updateSnapshots, refreshSnapshotOnce
 } from './lib/discovery.js';
 
@@ -69,7 +69,7 @@ function main() {
     const c = cascades.get(req.params.id);
     if (!c) return res.status(404).json({ error: 'Not found' });
     if (req.query?.mode === 'tasks') {
-      captureHTML(c.cdp, { keepInputs: true, sentHistory: sentMessageHistory.get(c.id) || [] }).then((snap) => {
+      captureHTML(c.cdp, { keepInputs: true }).then((snap) => {
         if (!snap || !snap.html) return res.status(404).json({ error: 'No snapshot' });
         res.json(snap);
       });
@@ -85,8 +85,7 @@ function main() {
     const c = cascades.get(req.params.id);
     if (!c) return res.status(404).json({ error: 'Not found' });
     try {
-      const history = sentMessageHistory.get(c.id) || [];
-      const result = await diagnoseTurnDetection(c.cdp, history);
+      const result = await diagnoseTurnDetection(c.cdp);
       if (result && !result.error) {
         res.json(result);
       } else {
@@ -124,12 +123,6 @@ function main() {
     try {
       const result = await injectMessage(c.cdp, message);
       if (result.ok) {
-        // Track sent message text for user turn matching
-        if (!sentMessageHistory.has(c.id)) sentMessageHistory.set(c.id, []);
-        const history = sentMessageHistory.get(c.id);
-        history.push(message.trim());
-        // Keep at most 100 entries to bound memory
-        if (history.length > 100) history.splice(0, history.length - 100);
         res.json({ success: true, message: result.method });
       } else {
         lastSendByCascade.delete(c.id);

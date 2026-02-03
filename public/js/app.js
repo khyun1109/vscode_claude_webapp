@@ -74,9 +74,9 @@ function decorateMessages() {
       el.setAttribute('data-msg-styled', 'true');
     }
 
-    // Ensure content wrapper exists for collapse functionality
-    let contentWrapper = el.querySelector('.user-msg-content');
-    let toggleBtn = el.querySelector('.user-msg-toggle');
+    // Ensure content wrapper exists for collapse functionality (direct children only)
+    let contentWrapper = el.querySelector(':scope > .user-msg-content');
+    let toggleBtn = el.querySelector(':scope > .user-msg-toggle');
 
     if (!contentWrapper) {
       contentWrapper = document.createElement('div');
@@ -136,43 +136,6 @@ function decorateMessages() {
     });
   });
 
-  // Recovery: class-based re-detection for elements that lost attributes during DOM patching
-  const yContainers = root.querySelectorAll('.Y');
-  yContainers.forEach(yEl => {
-    Array.from(yEl.children).forEach(child => {
-      if (child.tagName !== 'DIV') return;
-      if (child.getAttribute('data-msg-type')) return;
-      const cls = (child.className || '').toString();
-      const tokens = cls.split(/\s+/).filter(Boolean);
-      if (tokens.includes('P') && tokens.includes('X') && !tokens.includes('e')) {
-        child.setAttribute('data-msg-type', 'user');
-        child.setAttribute('data-msg-styled', 'true');
-        child.setAttribute('data-user-turn', 'true');
-      } else if (tokens.includes('P') && tokens.includes('e')) {
-        child.setAttribute('data-msg-type', 'assistant');
-        child.setAttribute('data-msg-styled', 'true');
-      }
-    });
-  });
-
-  // Ensure recovered user turns get content wrapper
-  root.querySelectorAll('[data-msg-type="user"]').forEach(el => {
-    if (!el.querySelector('.user-msg-content')) {
-      const contentWrapper = document.createElement('div');
-      contentWrapper.className = 'user-msg-content';
-      while (el.firstChild) contentWrapper.appendChild(el.firstChild);
-      el.appendChild(contentWrapper);
-    }
-    // Add "YOU" label if missing
-    if (!el.querySelector('.user-msg-label')) {
-      if (el.parentElement && el.parentElement.closest('[data-msg-type]')) return;
-      const label = document.createElement('div');
-      label.className = 'user-msg-label';
-      label.textContent = 'YOU';
-      label.style.cssText = 'font-family:"DM Mono",monospace;font-size:9.5px;font-weight:500;letter-spacing:2.5px;color:#f0a830;margin-bottom:10px;text-transform:uppercase;background:rgba(240,168,48,0.14);padding:3px 10px;border-radius:3px;border:1px solid rgba(240,168,48,0.2);display:inline-block;';
-      el.insertBefore(label, el.firstChild);
-    }
-  });
 }
 
 // Debug helper
