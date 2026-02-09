@@ -218,27 +218,16 @@ function main() {
       await new Promise(r => setTimeout(r, 400));
 
       const listResult = await evaluateInContexts(c.cdp, `(() => {
-        const panels = document.querySelectorAll('div');
-        let panel = null;
-        for (const d of panels) {
-          const buttons = d.querySelectorAll('button.g');
-          if (buttons.length >= 1) {
-            const input = d.querySelector('input');
-            if (input && buttons.length >= 1) { panel = d; break; }
-          }
-        }
-        if (!panel) return { items: [] };
+        const buttons = Array.from(document.querySelectorAll('button[class*="sessionItem"]'));
+        if (!buttons.length) return { items: [] };
 
-        const buttons = Array.from(panel.querySelectorAll('button.g'));
         const items = buttons.map(btn => {
-          const text = (btn.textContent || '').trim();
-          const isActive = btn.className.includes('uo') || btn.className.includes('active');
-          const match = text.match(/^(.+?)([\\d]+[smhd])$/);
-          return {
-            title: match ? match[1].trim() : text,
-            time: match ? match[2] : '',
-            active: isActive
-          };
+          const nameEl = btn.querySelector('[class*="sessionName"]');
+          const timeEl = btn.querySelector('[class*="sessionTime"]');
+          const title = nameEl ? nameEl.textContent.trim() : (btn.textContent || '').trim();
+          const time = timeEl ? timeEl.textContent.trim() : '';
+          const isActive = btn.className.includes('active');
+          return { title, time, active: isActive };
         });
 
         return { items };
@@ -276,8 +265,12 @@ function main() {
         await new Promise(r => setTimeout(r, 400));
 
         const safeTitle = ${JSON.stringify(title)};
-        const buttons = Array.from(document.querySelectorAll('button.g'));
-        const target = buttons.find(b => (b.textContent || '').includes(safeTitle));
+        const buttons = Array.from(document.querySelectorAll('button[class*="sessionItem"]'));
+        const target = buttons.find(b => {
+          const nameEl = b.querySelector('[class*="sessionName"]');
+          const name = nameEl ? nameEl.textContent.trim() : (b.textContent || '').trim();
+          return name.includes(safeTitle);
+        });
         if (!target) {
           btn.click();
           return { error: 'conversation not found' };
