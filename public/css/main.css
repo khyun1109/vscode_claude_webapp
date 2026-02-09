@@ -605,17 +605,24 @@ textarea:focus {
 /* ═══ ASSISTANT MESSAGES ═══ */
 #claude-root [data-msg-type="assistant"] {
   display: block !important;
-  background: rgba(139, 159, 212, 0.06) !important;
-  border: 1px solid rgba(139, 159, 212, 0.25) !important;
-  border-left: 4px solid var(--assist-accent) !important;
-  border-radius: 2px var(--radius-md) var(--radius-md) 2px !important;
-  padding: 12px 16px !important;
-  margin: 6px 0 !important;
+  background: rgba(139, 159, 212, 0.04) !important;
+  border: none !important;
+  border-left: 3px solid rgba(139, 159, 212, 0.3) !important;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+  padding: 8px 12px !important;
+  margin: 3px 0 !important;
   position: relative !important;
   clear: both !important;
   float: none !important;
   width: auto !important;
   max-width: 100% !important;
+}
+/* Tool-only assistant messages: even more compact */
+#claude-root [data-msg-type="assistant"][class*="dotSuccess"],
+#claude-root [data-msg-type="assistant"][class*="dotError"],
+#claude-root [data-msg-type="assistant"][class*="timeline"] {
+  padding: 6px 10px !important;
+  margin: 2px 0 !important;
 }
 #claude-root [data-msg-type="assistant"]::before {
   display: none !important;
@@ -700,26 +707,26 @@ textarea:focus {
 }
 #claude-root pre {
   background: #07080c !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: var(--radius-sm) !important;
+  border: none !important;
+  border-radius: var(--radius-xs) !important;
   padding: 0 !important;
-  margin: 14px 0 !important;
+  margin: 6px 0 !important;
   overflow: hidden !important;
-  font-size: 12.5px !important;
+  font-size: 12px !important;
   position: relative;
 }
 #claude-root pre::before {
-  content: ''; display: block; height: 2px;
-  background: linear-gradient(90deg, var(--user-accent) 0%, var(--assist-accent) 100%); opacity: 0.5;
+  content: ''; display: block; height: 1px;
+  background: linear-gradient(90deg, var(--user-accent) 0%, var(--assist-accent) 100%); opacity: 0.3;
 }
 #claude-root pre code {
   display: block;
   background: transparent !important;
   color: #bfc7d5 !important;
-  padding: 14px 16px !important;
+  padding: 8px 10px !important;
   font-size: inherit !important;
   overflow-x: auto;
-  line-height: 1.55;
+  line-height: 1.45;
   border: none !important;
   white-space: pre !important;
 }
@@ -900,18 +907,22 @@ textarea:focus {
 
 /* Thinking/accordion */
 #claude-root details {
-  background: var(--bg-panel); border: 1px solid var(--border-dim);
-  border-radius: var(--radius-sm); margin: 10px 0; overflow: hidden;
+  background: transparent; border: none;
+  border-radius: var(--radius-sm); margin: 2px 0; overflow: hidden;
+}
+#claude-root details[class*="thinking"] {
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-xs);
 }
 #claude-root summary {
-  padding: 10px 14px; cursor: pointer; font-weight: 500;
-  color: var(--text-muted); font-family: var(--font-mono);
+  padding: 6px 10px; cursor: pointer; font-weight: 500;
+  color: var(--text-ghost); font-family: var(--font-mono);
   font-size: 11px; letter-spacing: 0.3px;
-  display: flex; align-items: center; gap: 7px;
+  display: flex; align-items: center; gap: 5px;
 }
-#claude-root summary:hover { background: var(--bg-raised); color: var(--text-secondary); }
+#claude-root summary:hover { color: var(--text-secondary); }
 #claude-root details[open] summary { border-bottom: 1px solid var(--border-dim); }
-#claude-root details > *:not(summary) { padding: 14px; }
+#claude-root details > *:not(summary) { padding: 8px 10px; }
 
 /* SVG sizing */
 #claude-root svg { flex-shrink: 0; }
@@ -920,13 +931,108 @@ textarea:focus {
 #claude-root [class*="thinking"] svg, #claude-root [class*="toggle"] svg,
 #claude-root [class*="chevron"] svg, #claude-root summary svg { width: 13px !important; height: 13px !important; }
 
-/* Tool use */
-#claude-root [class*="tool"], #claude-root [data-tool] {
-  background: var(--bg-panel) !important; border: 1px solid var(--border-dim) !important;
-  border-radius: var(--radius-sm) !important; padding: 12px !important; margin: 10px 0 !important;
-}
-#claude-root [class*="success"], #claude-root [class*="completed"] { color: var(--sys-green) !important; }
-#claude-root [class*="error"], #claude-root [class*="failed"] { color: var(--danger) !important; }
-#claude-root [class*="pending"], #claude-root [class*="loading"] { color: var(--user-accent) !important; }
+/* Status indicators - error only */
+#claude-root [class*="dotError"], #claude-root [class*="dotFail"] { border-left-color: var(--danger) !important; }
 #claude-root hr { border: none; border-top: 1px solid var(--border-dim); margin: 20px 0; }
 #claude-root ::selection { background: rgba(226, 160, 63, 0.2); color: var(--text-primary); }
+
+/* ═══ TOOL USE (New Claude Code classes) ═══ */
+/* Outer tool container - flat, no extra boxing */
+#claude-root [class*="toolUse_"] {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* Tool summary header - compact inline label */
+#claude-root [class*="toolSummary_"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 10px !important;
+  margin: 0 !important;
+  background: var(--bg-raised) !important;
+  border: 1px solid var(--border-dim) !important;
+  border-radius: var(--radius-sm) !important;
+}
+#claude-root [class*="toolNameText_"]:first-child {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--assist-accent) !important;
+}
+#claude-root [class*="toolNameTextSecondary"] {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  color: var(--text-muted) !important;
+}
+/* Tool body area - transparent wrapper */
+#claude-root [class*="toolBody_"] {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 0 0 0 !important;
+  margin: 0 !important;
+}
+#claude-root [class*="toolBodyGrid_"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+/* IN/OUT rows - compact, no extra border */
+#claude-root [class*="toolBodyRow_"] {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 0 !important;
+  overflow: hidden !important;
+}
+#claude-root [class*="toolBodyRowLabel_"] {
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  color: var(--text-ghost) !important;
+  background: transparent !important;
+  padding: 4px 0 !important;
+  flex-shrink: 0 !important;
+  min-width: 28px !important;
+  text-align: right !important;
+}
+#claude-root [class*="toolBodyRowContent_"] {
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+#claude-root [class*="toolResult_"] {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+#claude-root [class*="toolResult_"] pre {
+  background: #07080c !important;
+  border: none !important;
+  border-radius: var(--radius-xs) !important;
+  padding: 8px 10px !important;
+  margin: 0 !important;
+  overflow-x: auto !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11.5px !important;
+  line-height: 1.45 !important;
+  color: #bfc7d5 !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+}
+#claude-root [class*="toolResult_"] pre::before { display: none !important; }
+/* Override the root-level [class*="tool"] to not add boxes to inner elements */
+#claude-root [class*="root_"][class*="ZUQ"] {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
